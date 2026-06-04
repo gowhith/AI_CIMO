@@ -1,114 +1,261 @@
 <div align="center">
 
-# AI-CIMO
+<h1>
+  <img src="docs/images/project-overview.png" alt="AI-CIMO" width="64" align="top" />
+  &nbsp;AI-CIMO
+</h1>
 
 ### AI-Powered Cloud Incident Management & Observability Platform
 
-Detect outages from log streams · Generate plain-language root-cause summaries · Triage incidents from a single dashboard.
+**Detect outages from log streams · Generate plain-language root-cause summaries with IBM watsonx.ai · Triage incidents from a single real-time dashboard.**
 
-Built with **React · FastAPI · PostgreSQL · Redis · Celery · Docker · Kubernetes · IBM watsonx.ai**
+<br />
 
-![Dashboard](docs/images/dashboard.png)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-blue?style=flat-square&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
+![IBM watsonx.ai](https://img.shields.io/badge/IBM_watsonx.ai-0F62FE?style=flat-square&logo=ibm&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
+[🚀 Quick Start](#-quick-start) · [✨ Features](#-features) · [📸 Screenshots](#-screenshots) · [🏗️ Architecture](#%EF%B8%8F-architecture) · [📖 API](#-api-reference) · [☁️ Deploy](#%EF%B8%8F-deploy-to-production)
+
+<br />
+
+<img src="docs/images/dashboard.png" alt="AI-CIMO Operations Dashboard" />
 
 </div>
 
 ---
 
-## What it does
+## 💡 Why AI-CIMO?
 
-AI-CIMO is a web platform that watches your fleet of microservices and turns the chaos of incident response into a one-click workflow:
+Modern engineering teams run dozens of microservices — `auth-service`, `payment-service`, `user-service`, `order-service`, `notification-service`, …. When something breaks, on-call engineers waste precious minutes manually digging through:
 
-1. **Microservices ship logs** to a single ingestion endpoint.
-2. **The detector** scans the stream every 30 s and creates a Critical incident when error rate crosses a service's threshold.
-3. **The AI engine** (IBM watsonx.ai Granite-3-8b, with a rule-based fallback) writes the incident summary, names the likely root cause, and produces a numbered debugging checklist.
-4. **Engineers triage** from one dashboard — correlated deployments, logs, and incident status update without tab-switching.
-5. **Notifications** fire on Slack + email; WebSocket pushes live updates to every open dashboard.
+❌ logs scattered across services · ❌ metrics buried in dashboards · ❌ deployment history in different tools · ❌ incident status in chat threads
 
-### Targeted users
+Every minute of delay = lost revenue, eroded customer trust, exhausted engineers.
 
-| Audience | Why they use it |
-| --- | --- |
-| **DevOps / SRE** | Cut MTTR by replacing manual log-digging with an AI-generated RCA |
-| **Backend engineers** | Debug API failures, DB issues, and crashes without leaving one tab |
-| **Engineering managers** | Track reliability + incident history per service |
-| **Cloud / Kubernetes admins** | Per-service health from a single pane of glass + Prometheus metrics |
-| **Support teams** | Plain-language incident summaries to quote to customers |
-| **CI/CD pipelines** (machine) | `POST /deployments` after every release for correlation |
-| **Microservices** (machine) | `POST /logs` (batched) from log shippers / OTel exporters |
+✅ **AI-CIMO consolidates everything into one AI-powered dashboard** that *detects* incidents the moment they happen, *diagnoses* the root cause with IBM watsonx.ai, and helps engineers *resolve* them — all without leaving the page.
 
 ---
 
-## Screenshots
+## ✨ Features
 
-### Landing — public marketing page
+<table>
+<tr>
+<td width="33%" valign="top">
 
-![Landing page](docs/images/landing.png)
+### 🚨 Detect
+- Rule-based detector watches log streams
+- Configurable per-service thresholds
+- Celery-beat scan every 30 s
+- Real-time WebSocket push on new incidents
+- Auto-correlates with recent deployments
 
-### Operations dashboard — live KPIs with sparklines + auto-refresh + WebSocket toasts
+</td>
+<td width="33%" valign="top">
 
-![Dashboard](docs/images/dashboard.png)
+### 🧠 Diagnose
+- **IBM watsonx.ai (Granite-3-8b)** writes the incident summary
+- Names the likely root cause
+- Produces a numbered debugging checklist
+- Confidence score on every analysis
+- Deterministic rule-based fallback so it works without credentials
 
-### Service health — per-service status with owners, thresholds, environments
+</td>
+<td width="33%" valign="top">
 
-![Services page](docs/images/services.png)
+### ⚡ Resolve
+- One dashboard for logs, metrics, incidents
+- Correlated deployment history
+- Status workflow: Open → Investigating → Resolved
+- Slack + email notifications
+- Engineer 👍 / 👎 feedback on every AI summary
 
-### Logs — filterable by service, level, trace ID, and full-text search
+</td>
+</tr>
+</table>
 
-![Logs page](docs/images/logs.png)
-
-### Incidents — sortable list with severity + status + AI summary on click-through
-
-![Incidents page](docs/images/incidents.png)
-
----
-
-## Features
+<details>
+<summary><b>👉 See all features (MVP + production-ready)</b></summary>
 
 ### Core MVP
-- 🔐 **JWT auth + RBAC** — admin / engineer roles
-- 📦 **Service registry** — register a service, set its alert threshold (default ≥ 5 errors in 60 s)
-- 📥 **Log ingestion** — single + batch endpoints, target throughput ≥ 1 k logs/sec
-- 🔍 **Log search** — filter by service / level / trace ID + full-text search
-- 🚨 **Incident detection** — windowed rule engine running on Celery beat every 30 s
-- 🧠 **AI Root-Cause Analysis** — watsonx.ai (Granite-3-8b) with a deterministic rule-based fallback so the system runs out-of-the-box
-- 📊 **Live dashboard** — animated KPI sparklines, auto-refresh every 5 s, WebSocket push on new incidents
-- 🚀 **Deployment correlation** — CI posts to `/deployments`, the UI flags incidents that follow recent releases
-- 📧 **Notifications** — Slack webhook + SMTP email on Critical incidents
-- 👍 **Engineer feedback** — thumbs up/down on every AI summary, stored for future fine-tuning data
-- 🧪 **Live demo simulator** — Celery beat job that generates realistic traffic across 8 sample services, with a one-click error-spike to drive the full incident → RCA → notification pipeline end-to-end
+- 🔐 JWT auth + RBAC (admin / engineer roles)
+- 📦 Service registry with per-service alert thresholds
+- 📥 Log ingestion endpoints (single + batch, ≥ 1 k logs/sec target)
+- 🔍 Log search — filter by service / level / trace ID + full-text
+- 🚨 Incident detection — windowed rule engine, Celery beat every 30 s
+- 🧠 AI Root-Cause Analysis — watsonx.ai with rule-based fallback
+- 📊 Live dashboard — animated KPI sparklines, auto-refresh 5 s, WebSocket toasts
+- 🚀 Deployment correlation — CI posts to `/deployments`
+- 📧 Notifications — Slack webhook + SMTP email on Critical
+- 👍 Engineer feedback — thumbs up/down on every AI summary
+- 🧪 Live demo simulator — Celery task generates realistic traffic + one-click error spikes
 
 ### Production-ready
-- 🐳 **Docker Compose** for local dev with health-checked services
-- ☸️ **Kubernetes** — Kustomize base + dev/prod overlays (Deployments, Services, HPA, Ingress + TLS)
-- 🔄 **CI/CD** — GitHub Actions for backend tests, frontend build, and IBM Cloud / IKS deploy
-- 📈 **Observability** — Prometheus metrics at `/metrics`, structured JSON logs (structlog)
-- ✅ **Tests** — 15 + pytest tests with 71 % backend coverage
-- 🔒 **Security** — bcrypt passwords, RBAC on every mutating route, CORS allowlist, dependency scans
-- 🎨 **Modern dark UI** — IBM Carbon-inspired tokens, animated KPI counters, skeleton loaders, live status indicators, WCAG-AA contrast
+- 🐳 Docker Compose for local dev with health-checked services
+- ☸️ Kubernetes — Kustomize base + dev/prod overlays (Deployments, Services, HPA, Ingress + TLS)
+- 🔄 CI/CD — GitHub Actions for backend tests, frontend build, IBM Cloud / IKS deploy
+- 📈 Observability — Prometheus metrics at `/metrics`, structured JSON logs
+- ✅ Tests — 15+ pytest tests with 71% backend coverage
+- 🔒 Security — bcrypt passwords, RBAC on every mutating route, CORS allowlist, dependency scans
+- 🎨 Modern dark UI — IBM Carbon tokens, animated KPI counters, skeleton loaders, WCAG-AA contrast
+
+</details>
 
 ---
 
-## Tech stack
+## 📸 Screenshots
 
-| Layer | Choice |
+<div align="center">
+
+### 🏠 Landing Page
+*Public marketing page — what AI-CIMO is, who it's for*
+
+<img src="docs/images/landing.png" alt="Landing page" width="100%" />
+
+<br /><br />
+
+### 📊 Operations Dashboard
+*Live KPI cards with animated sparklines, auto-refresh every 5 s, sidebar navigation, real-time WebSocket toasts*
+
+<img src="docs/images/dashboard.png" alt="Dashboard" width="100%" />
+
+<br /><br />
+
+### 🟢 Service Health
+*Per-service status with owner, environment, alert thresholds — at-a-glance fleet view*
+
+<img src="docs/images/services.png" alt="Services" width="100%" />
+
+<br /><br />
+
+### 📜 Logs Explorer
+*Filter by service, level, trace ID; search messages with full-text; live tail from the simulator*
+
+<img src="docs/images/logs.png" alt="Logs" width="100%" />
+
+<br /><br />
+
+### 🚨 Incidents Queue
+*All detected service failures, sorted by recency. Click into an incident to see the AI-generated RCA.*
+
+<img src="docs/images/incidents.png" alt="Incidents" width="100%" />
+
+</div>
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Docker Desktop** (or Docker Engine + Compose v2)
+- 4 GB RAM available to Docker
+- Free ports: `5180` (frontend), `8050` (API), `5440` (Postgres), `6390` (Redis)
+
+### One-command run
+
+```bash
+git clone https://github.com/gowhith/AI_CIMO.git
+cd AI_CIMO
+cp .env.example .env
+docker compose up --build -d
+```
+
+Wait ~30 seconds for migrations + seed, then:
+
+| Component | URL |
 | --- | --- |
-| Frontend | React 18 · TypeScript · Vite · Tailwind CSS · TanStack Query · Zustand · Recharts · lucide-react |
-| Backend | FastAPI · Pydantic v2 · SQLAlchemy 2.x · Alembic |
-| Database | PostgreSQL 16 |
-| Cache / Queue | Redis 7 |
-| Workers | Celery 5 (worker + beat) |
-| AI | IBM watsonx.ai (`ibm-watsonx-ai` SDK, Granite-3-8b-instruct) + rule-based fallback |
-| Containers | Docker, docker-compose for local |
-| Orchestration | Kubernetes (Kustomize manifests, IBM Cloud IKS-ready) |
-| CI / CD | GitHub Actions |
-| Monitoring | Prometheus + Grafana (manifests included) |
-| Testing | Pytest · httpx · React Testing Library · Vitest |
+| 🖥️ **Frontend** | http://localhost:5180 |
+| 🔌 **API** | http://localhost:8050 |
+| 📚 **Swagger UI** | http://localhost:8050/docs |
+| ❤️ **Health check** | http://localhost:8050/health |
+| 📈 **Prometheus metrics** | http://localhost:8050/metrics |
+
+### Demo credentials (pre-seeded)
+
+```
+email:    demo@aicimo.io
+password: demo1234
+```
+
+The seeder also creates:
+- 🟢 **8 sample services** (auth, payment, user, order, notification, database, search, ml-inference)
+- 📦 **24 deployment records**
+- 📝 **640 historical log entries**
+
+…so the dashboard isn't empty on first load.
+
+### 🎬 5-Minute End-to-End Demo
+
+1. Open http://localhost:5180 → click **Sign in** (credentials are pre-filled)
+2. Watch the **Dashboard** — 8 KPI sparklines animate and refresh every 5 s
+3. Navigate to **Admin** → click **Spike errors** next to `payment-service`
+4. Within 30 s: an incident appears, a 🚨 toast pops up on every open tab via WebSocket
+5. Click **Incidents → #1** — read the AI-generated summary, root cause, and 5 debugging steps
+6. Hit 👍 *Useful*, then **Mark resolved** — dashboard KPIs update in real-time
+
+### Stop the stack
+
+```bash
+docker compose down            # stop containers, keep data
+docker compose down -v         # also wipe Postgres volume
+```
 
 ---
 
-## Architecture
+## 🛠️ Tech Stack
 
-![Architecture](docs/images/architecture-overview.png)
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Frontend**
+- React 18 · TypeScript · Vite
+- Tailwind CSS (IBM Carbon-inspired tokens)
+- TanStack Query · Zustand
+- Recharts · lucide-react
+
+**Backend**
+- FastAPI · Pydantic v2
+- SQLAlchemy 2.x · Alembic
+- Celery 5 (worker + beat)
+- structlog for JSON logging
+
+</td>
+<td width="50%" valign="top">
+
+**Data / Infra**
+- PostgreSQL 16 (Alembic migrations)
+- Redis 7 (cache + Celery broker + pub/sub)
+- Docker + docker-compose
+- Kubernetes (Kustomize, IBM Cloud IKS-ready)
+
+**AI / Observability / DevOps**
+- IBM watsonx.ai (Granite-3-8b-instruct)
+- Prometheus + Grafana manifests
+- GitHub Actions CI/CD
+- Pytest · Vitest · React Testing Library
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Architecture
+
+<div align="center">
+<img src="docs/images/architecture-overview.png" alt="Architecture overview" width="90%" />
+</div>
+
+<details>
+<summary><b>📐 ASCII view (for terminals)</b></summary>
 
 ```
                  ┌────────────────────────────┐
@@ -137,74 +284,33 @@ AI-CIMO is a web platform that watches your fleet of microservices and turns the
                  └────────────────────────────┘
 ```
 
----
+</details>
 
-## Quick start
+<details>
+<summary><b>⏱️ Runtime pipeline (incident → AI RCA → notification)</b></summary>
 
-### Prerequisites
-- **Docker Desktop** (or Docker Engine + Compose v2)
-- 4 GB RAM available to Docker
-- Ports `5180` (frontend), `8050` (API), `5440` (Postgres), `6390` (Redis) free
+<div align="center">
+<img src="docs/images/runtime-pipeline.png" alt="Runtime pipeline" width="90%" />
+</div>
 
-### Run the full stack — one command
-
-```bash
-git clone <this-repo> ai-cimo
-cd ai-cimo
-docker compose up --build -d
-```
-
-Wait ~30 seconds. Then:
-
-| Service | URL |
-| --- | --- |
-| **Frontend** | http://localhost:5180 |
-| **API** | http://localhost:8050 |
-| **Swagger UI** | http://localhost:8050/docs |
-| **Health** | http://localhost:8050/health |
-| **Prometheus metrics** | http://localhost:8050/metrics |
-
-A **demo admin user is pre-seeded**, so you can sign in immediately:
-
-```
-email:    demo@aicimo.io
-password: demo1234
-```
-
-The seeder also creates 8 sample services (auth-service, payment-service, …), three deployment records each, and 640 historical log entries — so the dashboard isn't empty on first load.
-
-### 5-minute end-to-end demo
-
-1. Open http://localhost:5180 → click **Sign in** (the demo credentials are pre-filled).
-2. **Dashboard** — watch the 8 KPI sparklines refresh every 5 s.
-3. Navigate to **Admin** → click **Spike errors** next to `payment-service`.
-4. Within 30 seconds an incident appears, and a 🚨 toast pops up on every open tab via WebSocket.
-5. Click into **Incidents → #1** — the AI panel shows the auto-generated summary, root cause, and 5 debugging steps.
-6. Hit 👍 *Useful*, then **Mark resolved**. The dashboard KPIs update in real-time.
-
-### Stop the stack
-
-```bash
-docker compose down            # stop containers, keep data
-docker compose down -v         # also wipe the Postgres volume
-```
+</details>
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
-All settings live in `.env` at the project root (copied from `.env.example`).
+All settings live in `.env` at the project root. Copy from `.env.example`.
 
 | Variable | Default | Required? | What it does |
 | --- | --- | --- | --- |
 | `JWT_SECRET_KEY` | `dev-secret-change-me` | **production** | JWT signing secret |
 | `WATSONX_ENABLED` | `false` | optional | Set `true` to enable live IBM watsonx.ai calls |
-| `WATSONX_API_KEY` | — | watsonx | Your IBM Cloud API key value (not the "ApiKey-…" identifier) |
+| `WATSONX_API_KEY` | — | watsonx | Your IBM Cloud API key (the actual value, not the "ApiKey-…" ID) |
 | `WATSONX_PROJECT_ID` | — | watsonx | watsonx project UUID from dataplatform.cloud.ibm.com |
 | `WATSONX_URL` | `https://us-south.ml.cloud.ibm.com` | watsonx | Region URL |
-| `WATSONX_MODEL_ID` | `ibm/granite-3-8b-instruct` | optional | Override model |
+| `WATSONX_MODEL_ID` | `ibm/granite-3-8b-instruct` | optional | Override the LLM |
 | `SLACK_WEBHOOK_URL` | — | optional | Webhook URL for Slack alerts |
-| `SMTP_HOST` / `_PORT` / `_USER` / `_PASSWORD` / `_FROM` | — | optional | Email alert configuration |
+| `SMTP_*` | — | optional | Email alert configuration |
 | `SIMULATOR_ENABLED` | `true` | optional | Generate live demo traffic |
 | `SEED_ON_STARTUP` | `true` | optional | Seed demo data on first run |
 
@@ -214,23 +320,26 @@ After editing `.env`:
 docker compose up -d --force-recreate api worker beat
 ```
 
-A complete credentials guide lives in [docs/API_KEYS.md](docs/API_KEYS.md).
+📘 Complete credentials guide: [docs/API_KEYS.md](docs/API_KEYS.md)
 
-### Enabling live IBM watsonx.ai
+<details>
+<summary><b>🔑 Enabling live IBM watsonx.ai (free Lite plan)</b></summary>
 
-1. Sign up at https://cloud.ibm.com/registration (free, no card)
-2. Provision **watsonx.ai Runtime** (Lite plan, ~50k tokens/month free)
-3. At https://dataplatform.cloud.ibm.com → **New project** → grab the **Project ID** from the *Manage* tab
-4. At https://cloud.ibm.com/iam/apikeys → **Create** → **copy the actual key value immediately** (shown only once)
-5. Drop both into `.env` and set `WATSONX_ENABLED=true`
+1. Sign up at https://cloud.ibm.com/registration *(free, no card)*
+2. Provision **watsonx.ai Runtime** *(Lite plan, ~50k tokens/month free)*
+3. Go to https://dataplatform.cloud.ibm.com → **New project** → grab **Project ID** from the *Manage* tab
+4. Go to https://cloud.ibm.com/iam/apikeys → **Create** → **copy the actual key value immediately** (shown only once)
+5. Set both in `.env` and `WATSONX_ENABLED=true`
 6. `docker compose up -d --force-recreate api worker`
-7. Sign in as admin → **Admin** → the *AI Engine* card flips from yellow "stub mode" to green "watsonx live"
+7. Sign in as admin → **Admin** → *AI Engine* card flips from yellow "stub mode" to green "watsonx live"
 
-> **Without watsonx credentials, AI-CIMO still produces RCA summaries** — a deterministic rule-based engine pattern-matches log content (DB pool exhaustion, OOM, 4xx/5xx, etc.) so every incident has a useful diagnosis out-of-the-box.
+> 💡 **Without watsonx credentials, AI-CIMO still produces RCA summaries** via a deterministic rule-based engine that pattern-matches log content (DB pool exhaustion, OOM, 4xx/5xx, etc.). The system works fully out-of-the-box.
+
+</details>
 
 ---
 
-## Running each piece without Docker
+## 🧰 Running each piece without Docker
 
 ```bash
 # Backend
@@ -243,7 +352,7 @@ alembic upgrade head
 python -m app.seed                                    # one-time demo data
 uvicorn app.main:app --reload
 
-# Celery worker + beat (in separate terminals)
+# Celery worker + beat (separate terminals)
 celery -A app.core.celery_app:celery_app worker --loglevel=info
 celery -A app.core.celery_app:celery_app beat   --loglevel=info
 
@@ -255,9 +364,12 @@ npm run dev
 
 ---
 
-## API reference
+## 📖 API Reference
 
-Full OpenAPI schema is available at **http://localhost:8050/docs** when the stack is running.
+Full interactive OpenAPI schema at **http://localhost:8050/docs** when running.
+
+<details>
+<summary><b>📋 All endpoints</b></summary>
 
 | Method | Endpoint | Auth | Description |
 | --- | --- | --- | --- |
@@ -283,9 +395,14 @@ Full OpenAPI schema is available at **http://localhost:8050/docs** when the stac
 | `POST` | `/api/v1/simulator/spike/{service_id}` | **admin** | Queue an error burst |
 | `WS` | `/ws/incidents` | — | Live incident push |
 
+</details>
+
 ---
 
-## Repository layout
+## 📂 Repository Layout
+
+<details>
+<summary><b>Click to expand the full tree</b></summary>
 
 ```
 ai-cimo/
@@ -297,10 +414,10 @@ ai-cimo/
 │   │   ├── logs/             FR-3, FR-4  ingestion + search
 │   │   ├── incidents/        FR-5, FR-9  detector + workflow
 │   │   ├── ai_analysis/      FR-6  watsonx client + Celery task
-│   │   ├── deployments/      FR-10  release tracking
-│   │   ├── notifications/    FR-11  Slack + email
+│   │   ├── deployments/      FR-10 release tracking
+│   │   ├── notifications/    FR-11 Slack + email
 │   │   ├── dashboard/        FR-7  KPI aggregations
-│   │   ├── ws/               FR-13  WebSocket broadcaster
+│   │   ├── ws/               FR-13 WebSocket broadcaster
 │   │   ├── simulator/        Demo traffic generator
 │   │   └── seed.py           Idempotent demo-data seeder
 │   ├── alembic/              Schema migrations (7 tables)
@@ -318,21 +435,23 @@ ai-cimo/
 │   │   └── store/            zustand auth store
 │   └── Dockerfile
 ├── infra/
-│   ├── docker-compose.yml    (root-level — local dev)
 │   ├── k8s/                  Kustomize base + dev/prod overlays
 │   ├── terraform/            IBM Cloud IKS skeleton
 │   └── grafana/              Pre-built dashboards
 ├── .github/workflows/        backend-ci, frontend-ci, deploy
 ├── docs/
 │   ├── API_KEYS.md           Credentials reference
-│   ├── images/               README screenshots
+│   ├── images/               README screenshots + diagrams
 │   └── adr/                  Architecture decision records
+├── docker-compose.yml        Local dev stack
 └── README.md
 ```
 
+</details>
+
 ---
 
-## Testing
+## ✅ Testing
 
 ```bash
 # Backend (pytest + coverage)
@@ -343,21 +462,21 @@ pytest -q
 docker compose run --rm api pytest -q
 ```
 
-Current state: **15 passing tests, 71 % backend coverage** across auth, services, logs, incidents, and the AI stub engine.
+Current state: **15 passing tests, 71% backend coverage** across auth, services, logs, incidents, and the AI stub engine.
 
 ---
 
-## Deploy to production
+## ☁️ Deploy to Production
 
-The repository ships with a **deploy workflow** (`.github/workflows/deploy.yml`) that:
+The repository ships with a deploy workflow at [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) that:
 
-1. Builds the backend + frontend Docker images
-2. Pushes them to IBM Container Registry (`us.icr.io`)
-3. Logs into IBM Cloud + IKS, applies the Kustomize overlay, and rolls out
-4. **Dogfoods itself** — POSTs the release to `/api/v1/deployments` so AI-CIMO knows about every deploy of AI-CIMO
+1. 🏗️ Builds the backend + frontend Docker images
+2. 📤 Pushes them to IBM Container Registry (`us.icr.io`)
+3. 🔐 Logs into IBM Cloud + IKS, applies the Kustomize overlay, and rolls out
+4. 🥪 **Dogfoods itself** — POSTs the release to `/api/v1/deployments` so AI-CIMO knows about every deploy of AI-CIMO
 
-Required GitHub secrets: `IBM_CLOUD_API_KEY`, `AI_CIMO_DEPLOY_TOKEN`.
-Required repo variables: `IBM_REGION`, `IBM_RESOURCE_GROUP`, `IKS_CLUSTER_NAME`, `ICR_NAMESPACE`, `AI_CIMO_HOST`.
+**Required GitHub secrets:** `IBM_CLOUD_API_KEY`, `AI_CIMO_DEPLOY_TOKEN`
+**Required repo variables:** `IBM_REGION`, `IBM_RESOURCE_GROUP`, `IKS_CLUSTER_NAME`, `ICR_NAMESPACE`, `AI_CIMO_HOST`
 
 For local Kubernetes (kind / minikube):
 
@@ -367,15 +486,43 @@ kubectl apply -k infra/k8s/overlays/dev
 
 ---
 
-## License
+## 👥 Target Users
 
-MIT — see [LICENSE](LICENSE).
+| Audience | Why they use it |
+| --- | --- |
+| 🛠️ **DevOps / SRE** | Cut MTTR by replacing manual log-digging with an AI-generated RCA |
+| 💻 **Backend engineers** | Debug API failures, DB issues, and crashes without leaving one tab |
+| 📊 **Engineering managers** | Track reliability + incident history per service |
+| ☁️ **Cloud / Kubernetes admins** | Per-service health from a single pane of glass + Prometheus metrics |
+| 🎧 **Support teams** | Plain-language incident summaries to quote to customers |
+| 🤖 **CI/CD pipelines** | `POST /deployments` after every release for correlation |
+| 📡 **Microservices** | `POST /logs` (batched) from log shippers / OTel exporters |
+
+---
+
+## 🤝 Contributing
+
+1. Fork & clone
+2. `docker compose up --build -d`
+3. Make your changes — both backend and frontend support hot reload
+4. Add tests for backend changes (`backend/tests/`)
+5. Run `pytest -q` to make sure they pass
+6. Open a PR
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE).
 
 ---
 
 <div align="center">
 
-Built for the **AI + Cloud + Observability** intersection.
-IBM watsonx.ai · Cloud-native · Production-grade.
+**Built for the AI + Cloud + Observability intersection.**
+
+⭐ Star this repo if you find it useful · 🐛 [Report a bug](https://github.com/gowhith/AI_CIMO/issues) · 💬 [Discussions](https://github.com/gowhith/AI_CIMO/discussions)
+
+<sub>IBM watsonx.ai · Cloud-native · Production-grade</sub>
 
 </div>
