@@ -1,9 +1,6 @@
 <div align="center">
 
-<h1>
-  <img src="docs/images/project-overview.png" alt="AI-CIMO" width="64" align="top" />
-  &nbsp;AI-CIMO
-</h1>
+<h1>⚡ AI-CIMO</h1>
 
 ### AI-Powered Cloud Incident Management & Observability Platform
 
@@ -250,13 +247,6 @@ docker compose down -v         # also wipe Postgres volume
 
 ## 🏗️ Architecture
 
-<div align="center">
-<img src="docs/images/architecture-overview.png" alt="Architecture overview" width="90%" />
-</div>
-
-<details>
-<summary><b>📐 ASCII view (for terminals)</b></summary>
-
 ```
                  ┌────────────────────────────┐
                  │  React + TS + Tailwind     │
@@ -284,16 +274,7 @@ docker compose down -v         # also wipe Postgres volume
                  └────────────────────────────┘
 ```
 
-</details>
-
-<details>
-<summary><b>⏱️ Runtime pipeline (incident → AI RCA → notification)</b></summary>
-
-<div align="center">
-<img src="docs/images/runtime-pipeline.png" alt="Runtime pipeline" width="90%" />
-</div>
-
-</details>
+**Incident flow:** logs land in `/api/v1/logs` → Celery beat scans every 30 s → threshold crossed → Incident row created → Redis pub/sub event → WebSocket fan-out to every open dashboard → Celery worker calls watsonx.ai for the RCA → Slack + email notifications fire.
 
 ---
 
