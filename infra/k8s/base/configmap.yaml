@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-cimo-config
+  namespace: ai-cimo
+data:
+  ENVIRONMENT: "prod"
+  API_V1_PREFIX: "/api/v1"
+  WATSONX_URL: "https://us-south.ml.cloud.ibm.com"
+  WATSONX_MODEL_ID: "ibm/granite-3-8b-instruct"
+  WATSONX_ENABLED: "true"
+  INCIDENT_DEFAULT_ERROR_THRESHOLD: "5"
+  INCIDENT_DEFAULT_WINDOW_SECONDS: "60"
+  INCIDENT_SCAN_INTERVAL_SECONDS: "30"
+  CORS_ORIGINS: '["https://app.ai-cimo.example"]'

@@ -1,0 +1,90 @@
+# ─── Secrets / Environment ───────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# ─── Python ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+.python-version
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.tox/
+
+# ─── Node / Frontend ─────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+.cache/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.next/
+.nuxt/
+
+# ─── Editors / OS ────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── Logs / temp ─────────────────────────────────────────────────────────
+*.log
+logs/
+tmp/
+*.tmp
+*.bak
+*.orig
+
+# ─── Docker / runtime ────────────────────────────────────────────────────
+.docker/
+docker-compose.override.yml
+
+# ─── Terraform / IaC ─────────────────────────────────────────────────────
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# ─── Database dumps ──────────────────────────────────────────────────────
+*.sql.gz
+*.dump
+*.sqlite
+*.db
+celerybeat-schedule
+celerybeat.pid
+
+# ─── CI / build artifacts ────────────────────────────────────────────────
+*.zip
+*.tar.gz
+
+# ─── Plans / private notes ───────────────────────────────────────────────
+.claude/plans/
